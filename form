@@ -1,0 +1,60 @@
+function onFormSubmit(e) {
+  try {
+    // Log the entire event object for debugging
+    Logger.log(JSON.stringify(e));
+
+    // Ensure the event object is properly passed
+    if (!e.response) {
+      throw new Error('Event object or values are undefined');
+    }
+
+    // Change this to the email address where you want to send the responses
+    var emailAddress = "mijonoble@gmail.com";
+
+    // Get the form response from the event object
+    var formResponse = e.response;
+
+    // Get the form items and responses
+    var items = formResponse.getItemResponses();
+
+    // Construct the email subject and body
+    var subject = "New Form Submission";
+    var message = "You have a new form submission:\n\n";
+
+    // Loop through form items and corresponding responses
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i].getItem().getTitle();
+      var response = items[i].getResponse();
+      message += item + ": " + response + "\n";
+    }
+
+    // Log message for debugging
+    Logger.log(message);
+
+    // Send the email
+    MailApp.sendEmail(emailAddress, subject, message);
+  } catch (error) {
+    Logger.log("Error in onFormSubmit: " + error.toString());
+    MailApp.sendEmail("mijonoble@gmail.com", "Script Error", error.toString());
+  }
+}
+
+// Function to install the trigger
+function installTrigger() {
+  var form = FormApp.getActiveForm();
+  ScriptApp.newTrigger("onFormSubmit")
+    .forForm(form)
+    .onFormSubmit()
+    .create();
+  Logger.log("Trigger installed successfully.");
+}
+
+// Function to manually test trigger installation
+function testTriggerInstallation() {
+  var form = FormApp.getActiveForm();
+  Logger.log("Form title: " + form.getTitle());
+  var triggers = ScriptApp.getProjectTriggers();
+  triggers.forEach(trigger => {
+    Logger.log("Trigger: " + trigger.getHandlerFunction());
+  });
+}
