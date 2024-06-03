@@ -1,4 +1,7 @@
 function onFormSubmit(e) {
+  var html = HtmlService.createTemplateFromFile("email.html");
+  var htmlText = html.evaluate().getContent();
+  
   try {
     // Log the entire event object for debugging
     Logger.log(JSON.stringify(e));
@@ -9,33 +12,58 @@ function onFormSubmit(e) {
     }
 
     // Change this to the email address where you want to send the responses
-    var emailAddress = "email@gmail.com";
+    var emailAddress = "mijonoble@gmail.com";
 
     // Get the form response from the event object
     var formResponse = e.response;
+
+    // get email of submitter
+    var submitterEmail = formResponse.getRespondentEmail();
 
     // Get the form items and responses
     var items = formResponse.getItemResponses();
 
     // Construct the email subject and body
     var subject = "New Form Submission";
-    var message = "You have a new form submission:\n\n";
+    var submitterMessage = "This Requires HTML Support.";
+    var options = { htmlBody: htmlText };
+    
+    //var message = "You have a new form submission:\n\n";
 
     // Loop through form items and corresponding responses
+
+    var listItems = '';
     for (var i = 0; i < items.length; i++) {
       var item = items[i].getItem().getTitle();
       var response = items[i].getResponse();
-      message += item + ": " + response + "\n";
+      listItems += '<li>' + item + ": " + response + '</li>'
     }
 
+    /*for (var i = 0; i < items.length; i++) {
+      var item = items[i].getItem().getTitle();
+      var response = items[i].getResponse();
+      message += item + ": " + response + "\n";
+    }*/
+
+    var htmlTemplate = HtmlService.createTemplateFromFile("email2.html");
+    htmlTemplate.listItems = listItems;
+    var formMessage = htmlTemplate.evaluate().getContent();
+    //var message2 = "This requires html support";
+    //var options2 = { htmlBody: formMessage };
+
     // Log message for debugging
-    Logger.log(message);
+    Logger.log(formMessage);
 
     // Send the email
-    MailApp.sendEmail(emailAddress, subject, message);
+    MailApp.sendEmail(submitterEmail, subject, submitterMessage, options);
+    MailApp.sendEmail({
+      to: emailAddress,
+      subject: 'New Form Submission',
+      htmlBody: formMessage
+    });
   } catch (error) {
     Logger.log("Error in onFormSubmit: " + error.toString());
-    MailApp.sendEmail("rmail@gmail.com", "Script Error", error.toString());
+    MailApp.sendEmail("mijonoble@gmail.com", "Script Error", error.toString());
   }
 }
 
