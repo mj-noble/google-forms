@@ -12,7 +12,7 @@ function onFormSubmit(e) {
     }
 
     // Change this to the email address where you want to send the responses
-    var emailAddress = "mijonoble@gmail.com";
+    var emailAddress = "email@gmail.com";
 
     // Get the form response from the event object
     var formResponse = e.response;
@@ -63,7 +63,7 @@ function onFormSubmit(e) {
     });
   } catch (error) {
     Logger.log("Error in onFormSubmit: " + error.toString());
-    MailApp.sendEmail("mijonoble@gmail.com", "Script Error", error.toString());
+    MailApp.sendEmail("email@gmail.com", "Script Error", error.toString());
   }
 }
 
